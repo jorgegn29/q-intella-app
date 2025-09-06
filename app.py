@@ -27,7 +27,13 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-st.title("Q-Intella - Analizador de Datos")
+st.markdown("""
+<div style='text-align:center; margin-bottom: 0.5em;'>
+    <h1 style='font-size:4em; color:#228B22; font-weight:bold; text-shadow: 2px 2px 8px #b2f7b2;'>Q-Intella - Analizador de Datos</h1>
+    <h2 style='font-size:2.5em; color:#228B22; font-weight:bold; text-shadow: 1px 1px 6px #b2f7b2;'>by Jorge Guillem</h2>
+    <hr style='border:2px solid #228B22; width:60%; margin:auto;'>
+</div>
+""", unsafe_allow_html=True)
 st.header("Carga de archivo")
 
 # Inicializar historial en el estado de sesión
