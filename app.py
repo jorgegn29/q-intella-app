@@ -14,7 +14,7 @@ from sumy.parsers.plaintext import PlaintextParser
 from sumy.nlp.tokenizers import Tokenizer
 from sumy.summarizers.lsa import LsaSummarizer
 from gtts import gTTS
-from googletrans import Translator
+from deep_translator import GoogleTranslator
 from textblob import TextBlob
 from fpdf import FPDF
 
@@ -104,14 +104,13 @@ if archivo:
         }
         idioma_seleccionado = st.selectbox("Selecciona el idioma de traducción", list(idiomas.keys()), index=0)
         codigo_idioma = idiomas[idioma_seleccionado]
-        translator = Translator()
-        resumen_traducido = translator.translate(resumen, dest=codigo_idioma).text
+        resumen_traducido = GoogleTranslator(source='auto', target=codigo_idioma).translate(resumen)
         palabras_traducidas = []
         for p in palabras:
             try:
-                traduccion = translator.translate(p, dest=codigo_idioma)
-                if traduccion and traduccion.text:
-                    palabras_traducidas.append(traduccion.text)
+                traduccion = GoogleTranslator(source='auto', target=codigo_idioma).translate(p)
+                if traduccion:
+                    palabras_traducidas.append(traduccion)
             except Exception:
                 continue
         st.write(f"**Resumen traducido ({idioma_seleccionado}):**")
