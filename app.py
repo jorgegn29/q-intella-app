@@ -3,6 +3,7 @@ import os
 from io import BytesIO
 import datetime
 import csv
+import nltk
 import docx
 import PyPDF2
 import yake
@@ -91,13 +92,14 @@ if archivo:
         ax.axis('off')
         st.pyplot(fig)
 
-        # --- Resumen automático ---
-        st.header("Resumen automático")
-        parser = PlaintextParser.from_string(texto, Tokenizer("spanish"))
-        summarizer = LsaSummarizer()
-        resumen_sentencias = summarizer(parser.document, 5)  # 5 frases
-        resumen = " ".join(str(s) for s in resumen_sentencias)
-        st.write(resumen)
+    # --- Resumen automático ---
+    st.header("Resumen automático")
+    nltk.download('punkt')
+    parser = PlaintextParser.from_string(texto, Tokenizer("spanish"))
+    summarizer = LsaSummarizer()
+    resumen_sentencias = summarizer(parser.document, 5)  # 5 frases
+    resumen = " ".join(str(s) for s in resumen_sentencias)
+    st.write(resumen)
 
         # --- Traducción multilingüe ---
         st.header("Traducción multilingüe")
@@ -383,3 +385,8 @@ if archivo and 'texto' in locals() and texto.strip():
             st.write(texto_detectado if texto_detectado else "No se detectó texto.")
     else:
         st.info("No se encontraron imágenes en el documento.")
+
+elif archivo and 'texto' in locals() and not texto.strip():
+    st.warning("No se pudo extraer texto del archivo.")
+else:
+    st.info("Por favor, sube un archivo para comenzar el análisis.")
