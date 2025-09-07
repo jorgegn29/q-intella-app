@@ -179,11 +179,16 @@ if archivo:
     # --- Reconocimiento de entidades con IA ---
     st.header("Reconocimiento de entidades (IA)")
     import spacy
-    try:
-        nlp = spacy.load('es_core_news_md')
-    except OSError:
-        st.warning("El modelo 'es_core_news_md' no está disponible. Se usará el modelo básico 'es_core_news_sm'.")
-        nlp = spacy.load('es_core_news_sm')
+    import subprocess
+    def ensure_spacy_model(model_name):
+        try:
+            return spacy.load(model_name)
+        except OSError:
+            st.warning(f"Descargando el modelo spaCy '{model_name}'... Esto puede tardar unos segundos.")
+            subprocess.run(["python", "-m", "spacy", "download", model_name])
+            return spacy.load(model_name)
+
+    nlp = ensure_spacy_model("es_core_news_sm")
     doc_spacy = nlp(texto)
     entidades = [(ent.text, ent.label_) for ent in doc_spacy.ents]
     if entidades:
