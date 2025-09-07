@@ -178,18 +178,12 @@ if archivo:
 
     # --- Reconocimiento de entidades con IA ---
     st.header("Reconocimiento de entidades (IA)")
-    import spacy
-    try:
-        nlp = spacy.blank('es')
-        doc_spacy = nlp(texto)
-        entidades = [(ent.text, ent.label_) for ent in doc_spacy.ents]
-        st.warning("Reconocimiento de entidades limitado: modelo avanzado no disponible en Streamlit Cloud.")
-    except Exception as e:
-        entidades = []
-        st.error(f"No se pudo procesar entidades: {e}")
+    import re
+    st.header("Reconocimiento básico de entidades (sin spaCy)")
+    # Buscar palabras que empiezan con mayúscula (posibles nombres propios)
+    entidades = re.findall(r'\b[A-ZÁÉÍÓÚÑ][a-záéíóúñ]+\b', texto)
     if entidades:
-        df_entidades = pd.DataFrame(entidades, columns=["Entidad", "Tipo"])
-        st.dataframe(df_entidades)
+        st.write("Posibles entidades encontradas:", entidades)
     else:
         st.info("No se encontraron entidades relevantes en el texto.")
 

@@ -11,7 +11,6 @@ gtts
 deep-translator
 textblob
 fpdf
-spacy
 networkx
 pyvis
 text2emotion
