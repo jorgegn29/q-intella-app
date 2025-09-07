@@ -177,35 +177,42 @@ if archivo:
         st.info("El texto tiene un sentimiento NEUTRAL")
 
     # --- Reconocimiento de entidades con IA ---
-    st.header("Reconocimiento de entidades (IA)")
-    import re
-    st.header("Reconocimiento básico de entidades (sin spaCy)")
-    # Buscar palabras que empiezan con mayúscula (posibles nombres propios)
-    entidades = re.findall(r'\b[A-ZÁÉÍÓÚÑ][a-záéíóúñ]+\b', texto)
-    if entidades:
-        st.write("Posibles entidades encontradas:", entidades)
-    else:
-        st.info("No se encontraron entidades relevantes en el texto.")
-
-    # --- Grafo interactivo de entidades ---
-    st.header("Red de relaciones entre entidades")
+    st.header("Grafo interactivo de palabras clave y frases largas")
     import networkx as nx
     from pyvis.network import Network
     import tempfile
-    # Crear grafo
+    # Crear grafo: nodos son palabras clave y frases largas
     G = nx.Graph()
-    # Añadir entidades como nodos simples (sin tipo)
-    for entidad in entidades:
-        G.add_node(entidad)
-    # Relacionar entidades consecutivas (ejemplo simple)
-    for i in range(len(entidades)-1):
-        G.add_edge(entidades[i], entidades[i+1])
+    for palabra in palabras:
+        G.add_node(palabra, label="Palabra clave", color="#4CAF50")
+    for frase in frases_ordenadas[:5]:
+        G.add_node(frase, label="Frase larga", color="#FFD700")
+        # Relacionar cada frase larga con sus palabras clave presentes
+        for palabra in palabras:
+            if palabra in frase:
+                G.add_edge(frase, palabra)
     # Visualizar grafo con pyvis
     net = Network(height="400px", width="100%", bgcolor="#e6ffe6", font_color="black")
     net.from_nx(G)
     tmp_file = tempfile.NamedTemporaryFile(delete=False, suffix='.html')
     net.write_html(tmp_file.name)
     st.components.v1.html(open(tmp_file.name, 'r', encoding='utf-8').read(), height=400)
+
+    st.header("Nube de palabras clave con colores aleatorios")
+    import random
+    color_map = ["#4CAF50", "#81C784", "#A5D6A7", "#FFD700", "#F44336", "#2196F3", "#9C27B0"]
+    wordcloud = WordCloud(width=800, height=400, background_color="#e6ffe6", colormap=None,
+                         color_func=lambda *args, **kwargs: random.choice(color_map)).generate(" ".join(palabras))
+    fig_wc, ax_wc = plt.subplots()
+    ax_wc.imshow(wordcloud, interpolation='bilinear')
+    ax_wc.axis('off')
+    st.pyplot(fig_wc)
+
+    st.header("Ranking visual de frases más interesantes")
+    for i, frase in enumerate(frases_ordenadas[:5]):
+        st.markdown(f"<div style='background:#A5D6A7;padding:1em;margin-bottom:0.5em;border-radius:10px;'><b>{i+1}.</b> {frase} <span style='color:gray'>({len(frase.split())} palabras)</span></div>", unsafe_allow_html=True)
+
+    # --- Grafo interactivo de entidades ---
 
     # --- Infografía automática ---
     st.header("Infografía automática del documento")
