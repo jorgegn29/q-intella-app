@@ -194,13 +194,12 @@ if archivo:
     import tempfile
     # Crear grafo
     G = nx.Graph()
-    for entidad, tipo in entidades:
-        G.add_node(entidad, label=tipo)
-    # Relacionar entidades del mismo tipo
-    for i in range(len(entidades)):
-        for j in range(i+1, len(entidades)):
-            if entidades[i][1] == entidades[j][1]:
-                G.add_edge(entidades[i][0], entidades[j][0])
+    # Añadir entidades como nodos simples (sin tipo)
+    for entidad in entidades:
+        G.add_node(entidad)
+    # Relacionar entidades consecutivas (ejemplo simple)
+    for i in range(len(entidades)-1):
+        G.add_edge(entidades[i], entidades[i+1])
     # Visualizar grafo con pyvis
     net = Network(height="400px", width="100%", bgcolor="#e6ffe6", font_color="black")
     net.from_nx(G)
