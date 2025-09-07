@@ -12,6 +12,7 @@ deep-translator
 textblob
 fpdf
 spacy
+es_core_news_sm
 networkx
 pyvis
 text2emotion

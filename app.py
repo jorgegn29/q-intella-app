@@ -179,7 +179,11 @@ if archivo:
     # --- Reconocimiento de entidades con IA ---
     st.header("Reconocimiento de entidades (IA)")
     import spacy
-    nlp = spacy.load('es_core_news_md')
+    try:
+        nlp = spacy.load('es_core_news_md')
+    except OSError:
+        st.warning("El modelo 'es_core_news_md' no está disponible. Se usará el modelo básico 'es_core_news_sm'.")
+        nlp = spacy.load('es_core_news_sm')
     doc_spacy = nlp(texto)
     entidades = [(ent.text, ent.label_) for ent in doc_spacy.ents]
     if entidades:
