@@ -179,18 +179,14 @@ if archivo:
     # --- Reconocimiento de entidades con IA ---
     st.header("Reconocimiento de entidades (IA)")
     import spacy
-    import subprocess
-    def ensure_spacy_model(model_name):
-        try:
-            return spacy.load(model_name)
-        except OSError:
-            st.warning(f"Descargando el modelo spaCy '{model_name}'... Esto puede tardar unos segundos.")
-            subprocess.run(["python", "-m", "spacy", "download", model_name])
-            return spacy.load(model_name)
-
-    nlp = ensure_spacy_model("es_core_news_sm")
-    doc_spacy = nlp(texto)
-    entidades = [(ent.text, ent.label_) for ent in doc_spacy.ents]
+    try:
+        nlp = spacy.blank('es')
+        doc_spacy = nlp(texto)
+        entidades = [(ent.text, ent.label_) for ent in doc_spacy.ents]
+        st.warning("Reconocimiento de entidades limitado: modelo avanzado no disponible en Streamlit Cloud.")
+    except Exception as e:
+        entidades = []
+        st.error(f"No se pudo procesar entidades: {e}")
     if entidades:
         df_entidades = pd.DataFrame(entidades, columns=["Entidad", "Tipo"])
         st.dataframe(df_entidades)
