@@ -97,7 +97,7 @@ if archivo:
     import nltk
     nltk.download('punkt')
     nltk.download('stopwords')
-    parser = PlaintextParser.from_string(texto, Tokenizer("spanish"))
+    parser = PlaintextParser.from_string(texto, Tokenizer("english"))
     summarizer = LsaSummarizer()
     resumen_sentencias = summarizer(parser.document, 5)  # 5 frases
     resumen = " ".join(str(s) for s in resumen_sentencias)
