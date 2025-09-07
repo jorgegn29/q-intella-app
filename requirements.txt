@@ -13,7 +13,6 @@ textblob
 fpdf
 networkx
 pyvis
-text2emotion
 easyocr
 pillow
 pymupdf

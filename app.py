@@ -328,19 +328,16 @@ st.sidebar.markdown("""
 
 # --- Análisis de emociones y reconocimiento de imágenes SOLO si hay texto válido ---
 if archivo and 'texto' in locals() and texto.strip():
-    # --- Análisis de emociones y tono del texto ---
-    st.header("Análisis de emociones y tono del texto")
-    import text2emotion as t2e
-    emociones = t2e.get_emotion(texto)
-    emojis = {
-        'Happy': '😊',
-        'Angry': '😠',
-        'Surprise': '😮',
-        'Sad': '😢',
-        'Fear': '😱'
-    }
-    st.write({emojis[k]: v for k, v in emociones.items()})
-    st.bar_chart(emociones)
+    # --- Gráfica de sentimiento con TextBlob ---
+    st.header("Gráfica de sentimiento del texto")
+    blob = TextBlob(texto)
+    sentimiento = blob.sentiment.polarity
+    fig_sent, ax_sent = plt.subplots()
+    ax_sent.bar(['Sentimiento'], [sentimiento], color=['#4CAF50' if sentimiento > 0 else '#F44336' if sentimiento < 0 else '#FFD700'])
+    ax_sent.set_ylim([-1, 1])
+    ax_sent.set_ylabel('Polaridad')
+    ax_sent.set_title('Sentimiento general')
+    st.pyplot(fig_sent)
 
     # --- Reconocimiento de imágenes y texto en imágenes ---
     st.header("Reconocimiento de imágenes en el documento")
