@@ -92,51 +92,39 @@ if archivo:
         ax.axis('off')
         st.pyplot(fig)
 
-    # --- Resumen automático ---
-    st.header("Resumen automático")
-    import nltk
-    nltk.download('punkt')
-    nltk.download('stopwords')
-    parser = PlaintextParser.from_string(texto, Tokenizer("english"))
-    summarizer = LsaSummarizer()
-    resumen_sentencias = summarizer(parser.document, 5)  # 5 frases
-    resumen = " ".join(str(s) for s in resumen_sentencias)
-    st.write(resumen)
+    # --- Panel de estadísticas rápidas ---
+    st.header("Panel de estadísticas rápidas")
+    num_palabras = len(texto.split())
+    num_frases = texto.count('.')
+    num_caracteres = len(texto)
+    st.markdown(f"**Palabras:** {num_palabras} | **Frases:** {num_frases} | **Caracteres:** {num_caracteres}")
 
-    # --- Traducción multilingüe ---
-    st.header("Traducción multilingüe")
-    idiomas = {
-        "Español": "es",
-        "Inglés": "en",
-        "Francés": "fr",
-        "Alemán": "de",
-        "Italiano": "it"
-    }
-    idioma_seleccionado = st.selectbox("Selecciona el idioma de traducción", list(idiomas.keys()), index=0)
-    codigo_idioma = idiomas[idioma_seleccionado]
-    resumen_traducido = GoogleTranslator(source='auto', target=codigo_idioma).translate(resumen)
-    palabras_traducidas = []
-    for p in palabras:
-        try:
-            traduccion = GoogleTranslator(source='auto', target=codigo_idioma).translate(p)
-            if traduccion:
-                palabras_traducidas.append(traduccion)
-        except Exception:
-            continue
-    st.write(f"**Resumen traducido ({idioma_seleccionado}):**")
-    st.write(resumen_traducido)
-    st.write(f"**Palabras clave traducidas ({idioma_seleccionado}):**")
-    st.write(palabras_traducidas)
+    # --- Ranking de frases más largas/interesantes ---
+    st.header("Ranking de frases más largas/interesantes")
+    frases = [f.strip() for f in texto.split('.') if len(f.strip()) > 0]
+    frases_ordenadas = sorted(frases, key=lambda x: len(x.split()), reverse=True)
+    st.write("**Top 5 frases más largas:**")
+    for i, frase in enumerate(frases_ordenadas[:5]):
+        st.markdown(f"{i+1}. {frase} <span style='color:gray'>({len(frase.split())} palabras)</span>", unsafe_allow_html=True)
 
-    # --- Resumen por voz ---
-    st.header("Resumen por voz (IA)")
-    idioma_voz = st.selectbox("Selecciona el idioma para el resumen por voz", list(idiomas.values()), index=0, help="Elige el idioma en el que se reproducirá el resumen por voz.")
-    tts = gTTS(text=resumen_traducido, lang=idioma_voz)
-    audio_bytes = BytesIO()
-    tts.write_to_fp(audio_bytes)
-    audio_bytes.seek(0)
-    st.audio(audio_bytes, format="audio/mp3")
-    st.download_button("Descargar resumen en audio", data=audio_bytes, file_name="resumen.mp3", mime="audio/mp3")
+    # --- Análisis de sentimiento visual mejorado ---
+    st.header("Análisis de sentimiento visual")
+    blob = TextBlob(texto)
+    sentimiento = blob.sentiment.polarity
+    sentimiento_label = "NEUTRAL"
+    sentimiento_color = "#FFD700"
+    if sentimiento > 0.1:
+        sentimiento_label = "POSITIVO"
+        sentimiento_color = "#4CAF50"
+    elif sentimiento < -0.1:
+        sentimiento_label = "NEGATIVO"
+        sentimiento_color = "#F44336"
+    st.markdown(f"<div style='padding:1em; background:{sentimiento_color}; color:white; border-radius:10px; text-align:center; font-size:1.5em;'>Sentimiento: {sentimiento_label} ({sentimiento:.2f})</div>", unsafe_allow_html=True)
+
+    # --- Frecuencia de palabras con gráfica interactiva ---
+    st.header("Frecuencia de palabras (interactiva)")
+    palabras_freq = pd.Series(texto.lower().split()).value_counts().head(20)
+    st.bar_chart(palabras_freq)
 
     # --- Dashboard visual ---
     st.header("Dashboard visual de estadísticas del texto")
@@ -242,6 +230,7 @@ if archivo:
 
     # --- Exportar resultados ---
     st.header("Exportar resultados")
+    resumen = '. '.join(frases_ordenadas[:5]) + '.'
     # Exportar resumen y palabras clave en PDF
     if st.button("Descargar resumen y palabras clave en PDF"):
         pdf = FPDF()
