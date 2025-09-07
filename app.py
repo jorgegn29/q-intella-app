@@ -94,7 +94,9 @@ if archivo:
 
     # --- Resumen automático ---
     st.header("Resumen automático")
+    import nltk
     nltk.download('punkt')
+    nltk.download('stopwords')
     parser = PlaintextParser.from_string(texto, Tokenizer("spanish"))
     summarizer = LsaSummarizer()
     resumen_sentencias = summarizer(parser.document, 5)  # 5 frases
@@ -390,3 +392,4 @@ elif archivo and 'texto' in locals() and not texto.strip():
     st.warning("No se pudo extraer texto del archivo.")
 else:
     st.info("Por favor, sube un archivo para comenzar el análisis.")
+    
